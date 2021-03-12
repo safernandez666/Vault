@@ -21,3 +21,31 @@ services:
     cap_add:
       - IPC_LOCK
       
+  api:
+    build: api/.
+    container_name: api
+    environment:
+      DATABASE: "db"
+    links:
+      - db
+    restart: always
+    ports:
+      - "5000:5000"
+
+  db:
+    image: mysql:5.7
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: maradona
+      MYSQL_USER: maradona
+      MYSQL_PASSWORD:
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./db/maradona.sql:/docker-entrypoint-initdb.d/init.sql
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']    
+
+volumes:
+  dbdata:
